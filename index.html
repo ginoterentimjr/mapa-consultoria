@@ -176,6 +176,59 @@ footer{border-top:1px solid var(--fio); padding:18px 20px 40px; color:var(--meta
   .item{grid-template-columns:38px 1fr; }
   .item .seg{grid-column:1 / -1; justify-self:start}
 }
+/* ---------- IA do mapa */
+.ia-fab{position:fixed; right:18px; bottom:18px; z-index:45; display:none; align-items:center; gap:8px; background:var(--laranja); color:#fff;
+  border:0; border-radius:999px; padding:13px 20px 13px 16px; font-weight:600; font-size:15px; box-shadow:0 8px 24px rgba(27,21,18,.28)}
+.ia-fab:hover{filter:brightness(1.06)}
+.ia-fab svg{width:22px; height:22px}
+.ia-on .ia-fab{display:inline-flex}
+.perg-ia{display:none; margin-top:12px; background:transparent; color:var(--creme); border:1px solid var(--ouro); border-radius:999px; padding:7px 14px; font-size:13.5px; font-weight:600}
+.perg-ia:hover{background:var(--ouro); color:var(--escuro)}
+.ia-on .perg-ia{display:inline-flex}
+.chat{position:fixed; top:0; right:0; bottom:0; width:min(560px,100%); background:var(--claro); z-index:60; display:flex; flex-direction:column;
+  transform:translateX(102%); transition:transform .25s ease; box-shadow:-12px 0 40px rgba(27,21,18,.25)}
+.chat.on{transform:none}
+.chat__topo{background:var(--escuro); color:var(--creme); padding:16px 60px 14px 22px; position:relative}
+.chat__topo .eyebrow{color:var(--ouro)}
+.chat__topo h2{color:var(--creme); font-size:23px; margin:0}
+.chat__linha{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px}
+.chat__topo .ctx{display:inline-block; font-size:12.5px; font-weight:600; background:#3a302a; color:var(--creme); border-radius:999px; padding:4px 11px}
+.chat__topo .ctx[hidden]{display:none}
+.chat__topo .fechar{position:absolute; top:12px; right:14px}
+.chat__linha button{background:transparent; border:1px solid #4A423A; color:var(--creme); border-radius:999px; padding:5px 11px; font-size:12.5px}
+.chat__msgs{flex:1; overflow:auto; padding:18px 18px 8px; display:flex; flex-direction:column; gap:12px}
+.msg{max-width:92%; border-radius:16px; padding:11px 14px; font-size:15px; line-height:1.55; overflow-wrap:anywhere}
+.msg.eu{align-self:flex-end; background:var(--escuro); color:var(--creme); border-bottom-right-radius:4px; white-space:pre-wrap}
+.msg.ia{align-self:flex-start; background:var(--papel); border:1px solid var(--fio); border-bottom-left-radius:4px}
+.msg.ia p{margin:0 0 8px} .msg.ia p:last-child{margin-bottom:0}
+.msg.ia ul,.msg.ia ol{margin:4px 0 8px; padding-left:20px} .msg.ia li{margin:0 0 4px}
+.msg.ia h4{margin:6px 0 4px; font-size:15px; color:var(--laranja-f)}
+.msg.ia strong{color:var(--tinta)}
+.msg.erro{align-self:center; background:var(--creme); color:var(--laranja-f); border:1px solid #f0c9b4; font-size:14px}
+.msg .cursor{display:inline-block; width:8px; height:15px; background:var(--laranja); vertical-align:-2px; animation:pisca 1s steps(2) infinite}
+@keyframes pisca{50%{opacity:0}}
+.sugs{display:flex; flex-direction:column; gap:8px; margin-top:4px}
+.sugs .rot{font-size:11.5px; letter-spacing:.2em; font-weight:700; color:var(--laranja); text-transform:uppercase}
+.sugs button{text-align:left; background:var(--papel); border:1px solid var(--fio); border-radius:12px; padding:10px 13px; font-size:14.5px}
+.sugs button:hover{border-color:var(--ouro)}
+.chat__intro{color:var(--corpo); font-size:14.5px; margin:0}
+.chat__pe{border-top:1px solid var(--fio); background:var(--papel); padding:10px 14px 12px}
+.chat__form{display:flex; gap:8px; align-items:flex-end}
+.chat__form textarea{flex:1; resize:none; max-height:160px; min-height:46px; border:1px solid var(--fio); border-radius:14px; padding:11px 13px; font:inherit; font-size:15px; background:#fff}
+.chat__form button{background:var(--laranja); color:#fff; border:0; border-radius:999px; padding:12px 18px; font-weight:600}
+.chat__form button:disabled{opacity:.5; cursor:default}
+.chat__aviso{font-size:12px; color:var(--meta); margin:7px 2px 0; line-height:1.4}
+.codigo{background:var(--papel); border:1px solid var(--fio); border-radius:16px; padding:16px}
+.codigo b{display:block; font-size:16px; margin-bottom:4px}
+.codigo p{margin:0 0 10px; color:var(--corpo); font-size:14.5px}
+.codigo form{display:flex; gap:8px}
+.codigo input{flex:1; min-width:0; border:1px solid var(--fio); border-radius:999px; padding:10px 14px; font:inherit; text-transform:uppercase; letter-spacing:.08em}
+@media (max-width:820px){
+  .chat{top:auto; left:0; width:100%; height:94vh; border-radius:20px 20px 0 0; transform:translateY(102%)}
+  .chat__topo{border-radius:20px 20px 0 0}
+  .ia-fab{right:12px; bottom:12px; padding:12px 16px 12px 14px}
+}
+@media print{ .chat,.ia-fab{display:none!important} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important; scroll-behavior:auto!important} }
 @media print{ .topo,.painel,.veu{display:none} .sec{display:block} }
 </style>
@@ -265,11 +318,30 @@ footer{border-top:1px solid var(--fio); padding:18px 20px 40px; color:var(--meta
     <p class="eyebrow" id="p-eyebrow"></p>
     <h2 id="p-titulo"></h2>
     <p id="p-lema"></p>
+    <button class="perg-ia" id="perg-ia" type="button">Pergunte ao mapa sobre esta parada</button>
   </div>
   <div class="painel__corpo" id="p-corpo"></div>
   <div class="painel__pe">
     <button id="ant">← Parada anterior</button>
     <button id="prox">Próxima parada →</button>
+  </div>
+</aside>
+
+<button class="ia-fab" id="ia-fab" type="button" aria-controls="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 10.5h7M8.5 13.5h4.5"/></svg>Pergunte ao mapa</button>
+<aside class="chat" id="chat" role="dialog" aria-modal="true" aria-labelledby="chat-titulo" aria-hidden="true">
+  <div class="chat__topo">
+    <p class="eyebrow">IA do curso · Base: material da formação</p>
+    <h2 id="chat-titulo">Pergunte ao mapa.</h2>
+    <div class="chat__linha"><span class="ctx" id="chat-ctx" hidden></span><button type="button" id="chat-nova">Nova conversa</button></div>
+    <button class="fechar" id="chat-fechar" aria-label="Fechar a conversa">×</button>
+  </div>
+  <div class="chat__msgs" id="chat-msgs" aria-live="polite"></div>
+  <div class="chat__pe">
+    <form class="chat__form" id="chat-form">
+      <textarea id="chat-txt" rows="1" placeholder="Escreva sua pergunta" aria-label="Sua pergunta"></textarea>
+      <button type="submit" id="chat-env">Enviar</button>
+    </form>
+    <p class="chat__aviso">Descreva casos pelo assunto e pela função, sem nomes de pessoas, de unidades ou dados sigilosos. A IA pode errar: confira no mapa e no material.</p>
   </div>
 </aside>
 
@@ -500,6 +572,126 @@ footer{border-top:1px solid var(--fio); padding:18px 20px 40px; color:var(--meta
     var lk = el('a', 'baixar', 'Baixar PDF'); lk.href = 'templates/' + t.slug + '.pdf'; lk.setAttribute('download', ''); c.appendChild(lk);
     gt.appendChild(c);
   });
+
+
+  /* ---------- IA do mapa */
+  var IA_URL = "";
+  (function(){
+    if(IA_URL && IA_URL.indexOf('/*') !== 0) iniciarIA();
+    else fetch('ia.txt', {cache:'no-store'}).then(function(r){ return r.ok ? r.text() : ''; }).then(function(t){
+      t = (t || '').trim(); if(/^https:\/\/[^\s]+$/.test(t)){ IA_URL = t; iniciarIA(); }
+    }).catch(function(){});
+  })();
+  function iniciarIA(){
+    document.body.classList.add('ia-on');
+    var chat = document.getElementById('chat'), msgs = document.getElementById('chat-msgs'), form = document.getElementById('chat-form');
+    var txt = document.getElementById('chat-txt'), env = document.getElementById('chat-env'), ctxEl = document.getElementById('chat-ctx');
+    var hist = [], parada = '', ocupado = false, focoAntes = null, ctrl = null;
+    function ler(k){ try { return localStorage.getItem(k) || ''; } catch(e){ return ''; } }
+    function gravar(k, v){ try { if(v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch(e){} }
+    var codigo = ler('ia-codigo');
+    function esc(t){ return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function inline(t){ return esc(t).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>').replace(/`([^`]+)`/g, '<code>$1</code>'); }
+    function md(t){
+      var out = [], lista = null, par = [];
+      function fechaPar(){ if(par.length){ out.push('<p>' + par.map(inline).join('<br>') + '</p>'); par = []; } }
+      function fechaLista(){ if(lista){ out.push('<' + lista.tipo + '>' + lista.itens.map(function(i){ return '<li>' + inline(i) + '</li>'; }).join('') + '</' + lista.tipo + '>'); lista = null; } }
+      t.split('\n').forEach(function(l){
+        var m;
+        if(/^\s*$/.test(l)){ fechaPar(); fechaLista(); return; }
+        if((m = l.match(/^#{1,4}\s+(.*)$/))){ fechaPar(); fechaLista(); out.push('<h4>' + inline(m[1]) + '</h4>'); return; }
+        if((m = l.match(/^\s*[-•*]\s+(.*)$/))){ fechaPar(); if(!lista || lista.tipo !== 'ul'){ fechaLista(); lista = {tipo:'ul', itens:[]}; } lista.itens.push(m[1]); return; }
+        if((m = l.match(/^\s*\d+[.)]\s+(.*)$/))){ fechaPar(); if(!lista || lista.tipo !== 'ol'){ fechaLista(); lista = {tipo:'ol', itens:[]}; } lista.itens.push(m[1]); return; }
+        if(lista && /^\s{2,}\S/.test(l)){ lista.itens[lista.itens.length - 1] += ' ' + l.trim(); return; }
+        fechaLista(); par.push(l);
+      });
+      fechaPar(); fechaLista();
+      return out.join('');
+    }
+    function rolar(){ msgs.scrollTop = msgs.scrollHeight; }
+    function bolha(cls, conteudo, html){ var b = el('div', 'msg ' + cls); if(html) b.innerHTML = conteudo; else b.textContent = conteudo; msgs.appendChild(b); rolar(); return b; }
+    var SUG_GERAL = ['Em que etapa do mapa entra o Cynefin?', 'Que prova preciso ter para sair da Descoberta?', 'Como faço uma caminhada pelo processo na minha unidade?', 'Qual a diferença entre os níveis PMRL 7, 8 e 9?'];
+    var SUG_PARADA = ['Explique esta parada com um exemplo do serviço público.', 'Que perguntas faço ao cliente nesta parada?', 'Que ferramenta uso aqui, e como, passo a passo?', 'Como sei que já tenho a prova para seguir?'];
+    function vazio(){
+      msgs.innerHTML = '';
+      if(!codigo){ pedirCodigo(); return; }
+      msgs.appendChild(el('p', 'chat__intro', 'Pergunte sobre o mapa, as ferramentas e os encontros. As respostas vêm do material da formação.'));
+      var s = el('div', 'sugs'); s.appendChild(el('span', 'rot', parada ? 'Para começar, nesta parada' : 'Para começar'));
+      (parada ? SUG_PARADA : SUG_GERAL).forEach(function(q){ var b = el('button', null, q); b.type = 'button'; b.addEventListener('click', function(){ enviar(q); }); s.appendChild(b); });
+      msgs.appendChild(s);
+    }
+    function pedirCodigo(msg){
+      var c = el('div', 'codigo'); c.appendChild(el('b', null, 'Código da turma'));
+      c.appendChild(el('p', null, msg || 'Digite o código informado pelo facilitador. Ele fica guardado neste navegador.'));
+      var f = el('form'); var i = el('input'); i.setAttribute('aria-label', 'Código da turma'); i.autocomplete = 'off';
+      var b = el('button', 'btn', 'Entrar'); b.type = 'submit'; f.appendChild(i); f.appendChild(b); c.appendChild(f);
+      f.addEventListener('submit', function(e){ e.preventDefault(); var v = i.value.trim(); if(!v) return; codigo = v; gravar('ia-codigo', v); vazio(); txt.focus(); });
+      msgs.innerHTML = ''; msgs.appendChild(c); setTimeout(function(){ i.focus(); }, 80);
+    }
+    function abrirChat(contexto){
+      var novo = (contexto || '') !== parada;
+      parada = contexto || '';
+      ctxEl.hidden = !parada; ctxEl.textContent = parada ? 'Parada: ' + parada : '';
+      if(novo || !hist.length) { hist = []; vazio(); }
+      focoAntes = document.activeElement;
+      chat.classList.add('on'); chat.setAttribute('aria-hidden', 'false');
+      setTimeout(function(){ if(codigo) txt.focus(); }, 120);
+    }
+    function fecharChat(){ chat.classList.remove('on'); chat.setAttribute('aria-hidden', 'true'); if(focoAntes && focoAntes.focus) focoAntes.focus(); }
+    async function enviar(pergunta){
+      pergunta = (pergunta || '').trim();
+      if(!pergunta || ocupado) return;
+      if(!codigo){ pedirCodigo(); return; }
+      if(!hist.length) msgs.innerHTML = '';
+      hist.push({role:'user', content:pergunta}); bolha('eu', pergunta);
+      txt.value = ''; ajustar();
+      ocupado = true; env.disabled = true;
+      var b = bolha('ia', '<span class="cursor"></span>', true), resp = '';
+      ctrl = new AbortController();
+      try {
+        var r = await fetch(IA_URL.replace(/\/$/, '') + '/chat', {method:'POST', headers:{'Content-Type':'application/json'}, signal:ctrl.signal,
+          body: JSON.stringify({codigo:codigo, parada:parada, mensagens:hist})});
+        if(!r.ok){
+          var e = {}; try { e = await r.json(); } catch(x){}
+          b.remove(); hist.pop();
+          if(e.codigo){ codigo = ''; gravar('ia-codigo', ''); pedirCodigo('Código incorreto. Confira com o facilitador e digite de novo.'); }
+          else bolha('erro', e.erro || 'A IA não respondeu agora. Tente de novo.');
+          return;
+        }
+        var leitor = r.body.getReader(), dec = new TextDecoder(), buf = '';
+        for(;;){
+          var p = await leitor.read(); if(p.done) break;
+          buf += dec.decode(p.value, {stream:true});
+          var i;
+          while((i = buf.indexOf('\n\n')) >= 0){
+            var ev = buf.slice(0, i); buf = buf.slice(i + 2);
+            ev.split('\n').forEach(function(l){
+              if(l.indexOf('data:') !== 0) return;
+              var d; try { d = JSON.parse(l.slice(5)); } catch(x){ return; }
+              if(d.type === 'content_block_delta' && d.delta && d.delta.type === 'text_delta') resp += d.delta.text;
+              else if(d.type === 'error') resp += '\n\n[A resposta foi interrompida. Tente de novo.]';
+            });
+          }
+          b.innerHTML = md(resp) + '<span class="cursor"></span>'; rolar();
+        }
+        b.innerHTML = md(resp || 'Sem resposta. Tente de novo.');
+        hist.push({role:'assistant', content:resp});
+      } catch(err){
+        if(b.parentNode && !resp) b.remove();
+        if(resp){ b.innerHTML = md(resp); hist.push({role:'assistant', content:resp}); }
+        else { hist.pop(); if(err.name !== 'AbortError') bolha('erro', 'Sem conexão com a IA. Verifique a internet e tente de novo.'); }
+      } finally { ocupado = false; env.disabled = false; ctrl = null; rolar(); }
+    }
+    function ajustar(){ txt.style.height = 'auto'; txt.style.height = Math.min(txt.scrollHeight, 160) + 'px'; }
+    txt.addEventListener('input', ajustar);
+    txt.addEventListener('keydown', function(e){ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); enviar(txt.value); } });
+    form.addEventListener('submit', function(e){ e.preventDefault(); enviar(txt.value); });
+    document.getElementById('ia-fab').addEventListener('click', function(){ abrirChat(''); });
+    document.getElementById('perg-ia').addEventListener('click', function(){ if(atual) abrirChat(rotulo(atual)); });
+    document.getElementById('chat-fechar').addEventListener('click', fecharChat);
+    document.getElementById('chat-nova').addEventListener('click', function(){ if(ctrl) ctrl.abort(); hist = []; vazio(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && chat.classList.contains('on')){ e.stopPropagation(); fecharChat(); } }, true);
+  }
 
   /* ---------- endereço direto */
   var h = (location.hash || '').slice(1);
