@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de uso · IA do mapa</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--escuro:#1B1512;--claro:#F6F2EC;--papel:#FCFAF6;--tinta:#2A211C;--corpo:#5A5045;--meta:#8D8377;--laranja:#E5662C;--laranja-f:#B04A1C;--ouro:#C9A24D;--fio:#E2D8C8;--creme:#FBEEE5;--areia:#F1E9DC;
+  --opus:#B04A1C;--fable:#2E6FA8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--claro);color:var(--tinta);font-family:Poppins,system-ui,sans-serif;font-size:15px;line-height:1.5}
+.topo{background:var(--escuro);color:var(--creme)}
+.topo div{max-width:1100px;margin:0 auto;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.topo b{letter-spacing:.04em}.topo span{font-size:12px;color:#A2988C;letter-spacing:.2em}
+main{max-width:1100px;margin:0 auto;padding:22px 16px 60px}
+.eyebrow{font-size:12px;letter-spacing:.24em;font-weight:700;color:var(--laranja);text-transform:uppercase;margin:0 0 4px}
+h1{font-size:clamp(24px,3.4vw,34px);line-height:1.15;margin:0 0 4px}h1 em{font-style:normal;color:var(--laranja)}
+.fio{height:3px;width:110px;background:var(--ouro);border-radius:2px;margin:10px 0 14px}
+.lede{color:var(--corpo);margin:0 0 16px;max-width:75ch}
+.barra-sup{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 16px;color:var(--meta);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--fio);border-radius:999px;overflow:hidden;background:#fff}
+.seg button{border:0;background:transparent;padding:7px 14px;font:inherit;font-size:13px;font-weight:600;color:var(--corpo);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--tinta);color:#fff}
+.btn{background:var(--laranja);color:#fff;border:0;border-radius:999px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:14px 16px}
+.tile small{display:block;font-size:11.5px;letter-spacing:.16em;font-weight:700;color:var(--meta);text-transform:uppercase}
+.tile b{display:block;font-size:30px;line-height:1.15;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile p{margin:2px 0 0;color:var(--corpo);font-size:13px}
+.orc{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.orc .linha{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:14px}
+.orc .trilho{height:14px;background:var(--areia);border-radius:999px;margin-top:8px;overflow:hidden}
+.orc .enche{height:100%;background:var(--laranja-f);border-radius:999px;transition:width .4s}
+.orc .enche.alerta{background:#8E1F1F}
+.orc label{font-size:13px;color:var(--corpo)}.orc input{width:80px;font:inherit;padding:3px 8px;border:1px solid var(--fio);border-radius:8px}
+.cartao{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.cartao h2{font-size:17px;margin:0 0 2px}.cartao .sub{color:var(--meta);font-size:13px;margin:0 0 10px}
+.legenda{display:flex;gap:14px;font-size:13px;color:var(--corpo);margin:0 0 6px}
+.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+#grafico{position:relative}
+#grafico svg{display:block;width:100%;height:auto}
+.dica{position:absolute;pointer-events:none;background:var(--escuro);color:var(--creme);font-size:12.5px;padding:7px 10px;border-radius:8px;white-space:nowrap;display:none;z-index:2}
+table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--meta);font-weight:700;border-bottom:1px solid var(--fio);padding:6px 8px}
+td{padding:7px 8px;border-bottom:1px solid var(--fio)}td.n,th.n{text-align:right}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;color:#fff}
+.nota{color:var(--meta);font-size:12.5px;margin-top:6px}
+.codigo{max-width:440px;background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:16px}
+.codigo form{display:flex;gap:8px;margin-top:8px}.codigo input{flex:1;min-width:0;border:1px solid var(--fio);border-radius:999px;padding:9px 14px;font:inherit;text-transform:uppercase}
+.erro{color:#8E1F1F;font-weight:600}
+.tabela-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<header class="topo"><div><b>GINO TERENTIM</b><span>IA DO MAPA · PAINEL DE USO</span></div></header>
+<main>
+  <p class="eyebrow">Formação de Consultores Internos · TCU</p>
+  <h1>Quanto a IA <em>já consumiu.</em></h1>
+  <div class="fio"></div>
+  <p class="lede">Perguntas, modelo usado e custo estimado de cada resposta, atualizados a cada minuto. O painel registra só números: nenhum texto das conversas é guardado.</p>
+  <div id="app"></div>
+</main>
+<script>
+(function(){
+  var PRECO = { // US$ por milhão de tokens: entrada, saída, escrita de cache (5 min), leitura de cache (teto)
+    'claude-opus-5-5': {nome:'Opus 5.5', cor:'var(--opus)', i:4, o:20, cw:5, cr:0.4},
+    'claude-fable-5-1': {nome:'Fable 5.1', cor:'var(--fable)', i:10, o:50, cw:12.5, cr:1.0}
+  };
+  var app = document.getElementById('app'), URL_IA = '', dados = [], periodo = 'hoje', timer = null;
+  function ler(k){ try { return localStorage.getItem(k) || ''; } catch(e){ return ''; } }
+  function gravar(k, v){ try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch(e){} }
+  var codigo = ler('ia-codigo'), orcamento = +(ler('painel-orcamento') || 150);
+  function el(t, c, x){ var e = document.createElement(t); if(c) e.className = c; if(x != null) e.textContent = x; return e; }
+  function usd(v){ return 'US$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+  function custo(r){ var p = PRECO[r.m] || PRECO['claude-opus-5-5']; return (r.i * p.i + r.o * p.o + r.cw * p.cw + r.cr * p.cr) / 1e6; }
+  function diaSP(t){ return new Date(t).toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'}); }
+  function horaSP(t){ return +new Date(t).toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo', hour:'2-digit', hour12:false}).slice(0,2); }
+  function hm(t){ return new Date(t).toLocaleTimeString('pt-BR', {timeZone:'America/Sao_Paulo', hour:'2-digit', minute:'2-digit'}); }
+
+  function pedirCodigo(msg){
+    app.innerHTML = '';
+    var c = el('div', 'codigo'); c.appendChild(el('b', null, 'Código da turma'));
+    var p = el('p', msg ? 'erro' : null, msg || 'O mesmo código usado no chat do mapa.'); p.style.margin = '4px 0 0'; c.appendChild(p);
+    var f = el('form'), i = el('input'), b = el('button', 'btn', 'Abrir painel'); i.setAttribute('aria-label', 'Código da turma'); b.type = 'submit';
+    f.appendChild(i); f.appendChild(b); c.appendChild(f); app.appendChild(c); i.focus();
+    f.addEventListener('submit', function(e){ e.preventDefault(); codigo = i.value.trim(); gravar('ia-codigo', codigo); carregar(); });
+  }
+
+  async function carregar(){
+    if(!codigo){ pedirCodigo(); return; }
+    try {
+      if(!URL_IA){ URL_IA = (await (await fetch('ia.txt', {cache:'no-store'})).text()).trim(); }
+      var r = await fetch(URL_IA.replace(/\/$/, '') + '/uso?codigo=' + encodeURIComponent(codigo), {cache:'no-store'});
+      var j = await r.json();
+      if(j.codigo){ codigo = ''; gravar('ia-codigo', ''); pedirCodigo('Código incorreto.'); return; }
+      if(!r.ok){ app.innerHTML = ''; app.appendChild(el('p', 'erro', j.erro || 'Não foi possível ler o uso agora.')); return; }
+      dados = j.itens.sort(function(a, b){ return a.t - b.t; });
+      desenhar(j.agora);
+    } catch(e){ app.innerHTML = ''; app.appendChild(el('p', 'erro', 'Sem conexão com o servidor da IA. Tentando de novo em um minuto.')); }
+    clearTimeout(timer); timer = setTimeout(carregar, 60000);
+  }
+
+  function desenhar(agora){
+    var hoje = diaSP(agora);
+    var lista = periodo === 'hoje' ? dados.filter(function(r){ return diaSP(r.t) === hoje; }) : dados;
+    var total = 0, nProf = 0, porModelo = {};
+    lista.forEach(function(r){ var c = custo(r); total += c; if(r.p) nProf++; porModelo[r.m] = (porModelo[r.m] || 0) + c; });
+    app.innerHTML = '';
+    // período e atualização
+    var sup = el('div', 'barra-sup'), seg = el('div', 'seg');
+    [['hoje', 'Hoje'], ['tudo', 'Desde o início']].forEach(function(o){ var b = el('button', null, o[1]); b.setAttribute('aria-pressed', periodo === o[0]); b.addEventListener('click', function(){ periodo = o[0]; desenhar(agora); }); seg.appendChild(b); });
+    sup.appendChild(seg); sup.appendChild(el('span', null, 'Atualizado às ' + hm(agora) + ' · nova leitura a cada minuto'));
+    app.appendChild(sup);
+    // números
+    var tiles = el('div', 'tiles');
+    function tile(rot, val, txt){ var t = el('div', 'tile'); t.appendChild(el('small', null, rot)); t.appendChild(el('b', null, val)); if(txt) t.appendChild(el('p', null, txt)); tiles.appendChild(t); }
+    tile('Custo estimado', usd(total), periodo === 'hoje' ? 'hoje, ' + hoje : 'desde o início');
+    tile('Respostas', String(lista.length), lista.length ? 'média de ' + usd(total / lista.length) + ' cada' : 'nenhuma ainda');
+    tile('Aprofundamentos', String(nProf), 'com o Fable 5.1 · ' + usd(porModelo['claude-fable-5-1'] || 0));
+    tile('Respostas padrão', String(lista.length - nProf), 'com o Opus 5.5 · ' + usd(porModelo['claude-opus-5-5'] || 0));
+    app.appendChild(tiles);
+    // orçamento
+    var o = el('div', 'orc'), pct = Math.min(100, total / orcamento * 100);
+    var l1 = el('div', 'linha'); l1.appendChild(el('b', null, 'Orçamento: ' + usd(total) + ' de ' + usd(orcamento) + ' (' + Math.round(total / orcamento * 100) + '%)'));
+    var lab = el('label', null, 'Orçamento em US$ '); var inp = el('input'); inp.type = 'number'; inp.min = 1; inp.value = orcamento;
+    inp.addEventListener('change', function(){ orcamento = Math.max(1, +inp.value || 150); gravar('painel-orcamento', orcamento); desenhar(agora); });
+    lab.appendChild(inp); l1.appendChild(lab); o.appendChild(l1);
+    var tr = el('div', 'trilho'), en = el('div', 'enche' + (pct >= 80 ? ' alerta' : '')); en.style.width = pct + '%'; tr.appendChild(en); o.appendChild(tr);
+    if(pct >= 80) o.appendChild(el('p', 'erro', 'Acima de 80% do orçamento. Considere orientar a turma a usar menos o Aprofundar.'));
+    app.appendChild(o);
+    // gráfico por hora
+    var cg = el('div', 'cartao'); cg.appendChild(el('h2', null, 'Custo por hora')); cg.appendChild(el('p', 'sub', periodo === 'hoje' ? 'Hoje, horário de Brasília' : 'Todas as datas somadas, por hora do dia'));
+    var leg = el('div', 'legenda'); Object.keys(PRECO).forEach(function(k){ var s = el('span'); var i = el('i'); i.style.background = PRECO[k].cor; s.appendChild(i); s.appendChild(document.createTextNode(PRECO[k].nome)); leg.appendChild(s); }); cg.appendChild(leg);
+    var g = el('div'); g.id = 'grafico'; cg.appendChild(g); app.appendChild(cg); grafico(g, lista);
+    // tabela
+    var ct = el('div', 'cartao'); ct.appendChild(el('h2', null, 'Últimas respostas')); ct.appendChild(el('p', 'sub', 'As 20 mais recentes do período'));
+    var w = el('div', 'tabela-wrap'), tb = el('table'); tb.innerHTML = '<thead><tr><th>Hora</th><th>Modelo</th><th class="n">Material lido</th><th class="n">Material recarregado</th><th class="n">Resposta</th><th class="n">Custo</th></tr></thead>';
+    var body = el('tbody');
+    lista.slice(-20).reverse().forEach(function(r){
+      var p = PRECO[r.m] || {nome:r.m, cor:'var(--meta)'}, trr = el('tr');
+      trr.appendChild(el('td', null, (periodo === 'hoje' ? '' : diaSP(r.t).slice(0, 5) + ' ') + hm(r.t)));
+      var tdm = el('td'), ch = el('span', 'chip', p.nome + (r.p ? ' · aprofundar' : '')); ch.style.background = p.cor; tdm.appendChild(ch); trr.appendChild(tdm);
+      trr.appendChild(el('td', 'n', (r.cr / 1000).toFixed(0) + ' mil tokens'));
+      trr.appendChild(el('td', 'n', r.cw ? (r.cw / 1000).toFixed(0) + ' mil tokens' : '-'));
+      trr.appendChild(el('td', 'n', r.o + ' tokens'));
+      trr.appendChild(el('td', 'n', usd(custo(r))));
+      body.appendChild(trr);
+    });
+    if(!lista.length){ var v = el('tr'), td = el('td', null, 'Nenhuma resposta no período.'); td.colSpan = 6; v.appendChild(td); body.appendChild(v); }
+    tb.appendChild(body); w.appendChild(tb); ct.appendChild(w);
+    ct.appendChild(el('p', 'nota', 'Custo estimado pelo preço de tabela, com a leitura do material em cache pelo teto (10% da entrada). "Material recarregado" aparece quando o cache expirou, após 5 minutos sem uso, e é o item mais caro. O valor oficial está no console da Anthropic, em Custos.'));
+    app.appendChild(ct);
+  }
+
+  function grafico(box, lista){
+    var horas = {}; lista.forEach(function(r){ var h = horaSP(r.t); horas[h] = horas[h] || {opus:0, fable:0, n:0}; horas[h][r.m === 'claude-fable-5-1' ? 'fable' : 'opus'] += custo(r); horas[h].n++; });
+    var hs = Object.keys(horas).map(Number); var h0 = hs.length ? Math.min(8, Math.min.apply(null, hs)) : 8, h1 = hs.length ? Math.max(18, Math.max.apply(null, hs)) : 18;
+    var W = 960, H = 260, ml = 56, mb = 28, mt = 10, n = h1 - h0 + 1, bw = (W - ml - 10) / n;
+    var max = 0; for(var h = h0; h <= h1; h++){ var x = horas[h]; if(x) max = Math.max(max, x.opus + x.fable); }
+    var passo = max > 20 ? 10 : max > 8 ? 5 : max > 4 ? 2 : max > 2 ? 1 : 0.5; var topo = Math.max(passo, Math.ceil(max / passo) * passo);
+    var y = function(v){ return mt + (H - mt - mb) * (1 - v / topo); };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Custo por hora">';
+    for(var v = 0; v <= topo + 1e-9; v += passo){ s += '<line x1="' + ml + '" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="#E2D8C8" stroke-width="1"/>' + '<text x="' + (ml - 8) + '" y="' + (y(v) + 4) + '" font-size="12" text-anchor="end" fill="#8D8377">US$ ' + v.toLocaleString('pt-BR') + '</text>'; }
+    for(h = h0; h <= h1; h++){
+      var x0 = ml + (h - h0) * bw + bw * 0.18, larg = bw * 0.64, d = horas[h] || {opus:0, fable:0, n:0};
+      var yo = y(d.opus), yf = y(d.opus + d.fable);
+      if(d.opus > 0) s += '<rect x="' + x0 + '" y="' + yo + '" width="' + larg + '" height="' + Math.max(0, y(0) - yo) + '" rx="' + (d.fable > 0 ? 0 : 4) + '" fill="#B04A1C"/>';
+      if(d.fable > 0) s += '<rect x="' + x0 + '" y="' + yf + '" width="' + larg + '" height="' + Math.max(0, yo - yf - 2) + '" rx="4" fill="#2E6FA8"/>';
+      s += '<rect class="alvo" data-h="' + h + '" x="' + (ml + (h - h0) * bw) + '" y="' + mt + '" width="' + bw + '" height="' + (H - mt - mb) + '" fill="transparent"/>';
+      s += '<text x="' + (ml + (h - h0) * bw + bw / 2) + '" y="' + (H - 8) + '" font-size="12" text-anchor="middle" fill="#8D8377">' + h + 'h</text>';
+    }
+    s += '<line x1="' + ml + '" x2="' + W + '" y1="' + y(0) + '" y2="' + y(0) + '" stroke="#8D8377" stroke-width="1"/></svg>';
+    box.innerHTML = s; var dica = el('div', 'dica'); box.appendChild(dica);
+    box.querySelectorAll('.alvo').forEach(function(a){
+      a.addEventListener('mousemove', function(e){ var hh = +a.dataset.h, d = horas[hh] || {opus:0, fable:0, n:0}, rb = box.getBoundingClientRect();
+        dica.innerHTML = '<b>' + hh + 'h</b> · ' + d.n + ' respostas<br>Opus 5.5: ' + usd(d.opus) + '<br>Fable 5.1: ' + usd(d.fable);
+        dica.style.display = 'block'; dica.style.left = Math.min(e.clientX - rb.left + 12, rb.width - 170) + 'px'; dica.style.top = (e.clientY - rb.top - 10) + 'px'; });
+      a.addEventListener('mouseleave', function(){ dica.style.display = 'none'; });
+    });
+  }
+  carregar();
+})();
+</script>
+</body>
+</html>
