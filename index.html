@@ -244,6 +244,9 @@ footer{border-top:1px solid var(--fio); padding:18px 20px 40px; color:var(--meta
 .ia-on .perg-f{display:inline-flex}
 @keyframes pulso{0%{box-shadow:0 0 0 0 rgba(229,102,44,.55)}70%{box-shadow:0 0 0 16px rgba(229,102,44,0)}100%{box-shadow:0 0 0 0 rgba(229,102,44,0)}}
 .ia-fab.pulsa{animation:pulso 1.8s ease-out 4}
+.aprof{display:inline-flex; align-items:center; gap:6px; margin:-4px 0 0 2px; align-self:flex-start; background:transparent; border:1px solid var(--ouro); color:var(--tinta); border-radius:999px; padding:6px 12px; font-size:13px; font-weight:600}
+.aprof:hover{background:var(--areia)}
+.msg .selo{display:inline-block; margin-bottom:6px; font-size:11px; letter-spacing:.16em; font-weight:700; text-transform:uppercase; color:var(--ouro)}
 @media (prefers-reduced-motion:reduce){ *{transition:none!important; scroll-behavior:auto!important} }
 @media print{ .topo,.painel,.veu{display:none} .sec{display:block} }
 </style>
@@ -664,19 +667,20 @@ footer{border-top:1px solid var(--fio); padding:18px 20px 40px; color:var(--meta
       setTimeout(function(){ if(codigo) txt.focus(); }, 120);
     }
     function fecharChat(){ chat.classList.remove('on'); chat.setAttribute('aria-hidden', 'true'); if(focoAntes && focoAntes.focus) focoAntes.focus(); }
-    async function enviar(pergunta){
+    async function enviar(pergunta, profundo){
       pergunta = (pergunta || '').trim();
       if(!pergunta || ocupado) return;
       if(!codigo){ pedirCodigo(); return; }
       if(!hist.length) msgs.innerHTML = '';
-      hist.push({role:'user', content:pergunta}); bolha('eu', pergunta);
+      hist.push({role:'user', content:pergunta}); bolha('eu', profundo ? 'Aprofundar a resposta com o modelo mais avançado.' : pergunta);
+      msgs.querySelectorAll('.aprof').forEach(function(x){ x.remove(); });
       txt.value = ''; ajustar();
       ocupado = true; env.disabled = true;
       var b = bolha('ia', '<span class="cursor"></span>', true), resp = '';
       ctrl = new AbortController();
       try {
         var r = await fetch(IA_URL.replace(/\/$/, '') + '/chat', {method:'POST', headers:{'Content-Type':'application/json'}, signal:ctrl.signal,
-          body: JSON.stringify({codigo:codigo, parada:parada, mensagens:hist})});
+          body: JSON.stringify({codigo:codigo, parada:parada, mensagens:hist, profundo:!!profundo})});
         if(!r.ok){
           var e = {}; try { e = await r.json(); } catch(x){}
           b.remove(); hist.pop();
@@ -698,10 +702,15 @@ footer{border-top:1px solid var(--fio); padding:18px 20px 40px; color:var(--meta
               else if(d.type === 'error') resp += '\n\n[A resposta foi interrompida. Tente de novo.]';
             });
           }
-          b.innerHTML = md(resp) + '<span class="cursor"></span>'; rolar();
+          b.innerHTML = (profundo ? '<span class="selo">Modelo avançado</span>' : '') + md(resp) + '<span class="cursor"></span>'; rolar();
         }
-        b.innerHTML = md(resp || 'Sem resposta. Tente de novo.');
+        b.innerHTML = (profundo ? '<span class="selo">Modelo avançado</span>' : '') + md(resp || 'Sem resposta. Tente de novo.');
         hist.push({role:'assistant', content:resp});
+        if(resp && !profundo){
+          var ap = el('button', 'aprof', 'Aprofundar com o modelo mais avançado'); ap.type = 'button';
+          ap.addEventListener('click', function(){ enviar('Aprofunde a resposta anterior: mais rigor, mais ligação com o material do curso e com o mapa, um exemplo concreto e as perguntas que o consultor deve fazer. Mantenha as mesmas regras.', true); });
+          msgs.appendChild(ap);
+        }
       } catch(err){
         if(b.parentNode && !resp) b.remove();
         if(resp){ b.innerHTML = md(resp); hist.push({role:'assistant', content:resp}); }
